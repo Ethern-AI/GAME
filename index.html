@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AKKUA — Tecnología y Juego</title>
-  <meta name="description" content="AKKUA — Juega, juega y conoce. Repartiendo soluciones." />
+  <meta name="description" content="AKKUA — Juega, explora nuestro catálogo y contáctanos. Experiencia moderna, rápida y pulida." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -37,7 +37,7 @@
     /* ---------- Loader ---------- */
     #loader{
       position:fixed; inset:0; background:#050608; display:grid; place-items:center; z-index:9999;
-      transition:opacity 5s ease, visibility 5s ease;
+      transition:opacity .6s ease, visibility .6s ease;
     }
     #loader.hidden{opacity:0; visibility:hidden}
     .spinner{
@@ -214,12 +214,16 @@
     </div>
   </div>
 
- 
+  <!-- JUGAR -->
+  <section id="jugar" aria-labelledby="jugar-title">
+    <h2 id="jugar-title">Jugar</h2>
+    <p class="section-sub">Come los orbes cian, evita chocar contigo y con las paredes. Aumenta la velocidad al crecer.</p>
+  </section>
 
   <!-- CATÁLOGO -->
   <section id="catalogo" aria-labelledby="catalogo-title">
     <h2 id="catalogo-title">Catálogo</h2>
-    <p class="section-sub">Interfaz innovadora: filtros, búsqueda, ordenamiento y tarjetas con animación.</p>
+    <p class="section-sub">Interfaz inspirada en retail moderno (tipo Bershka): filtros, búsqueda, ordenamiento y tarjetas con animación.</p>
 
     <div class="catalog-top">
       <div class="filters" id="filters"></div>
@@ -442,21 +446,21 @@
     const sort = document.getElementById('sort');
 
     const products = [
-      {id:1, name:'Playera Essential AKKUA', price:349, tag:'Unisex', cat:'Conduccion', emoji:'👕'},
-      {id:2, name:'Sudadera Cian Gradient', price:899, tag:'Unisex', cat:'Almacenamiento', emoji:'🧥'},
-      {id:3, name:'Pants Black Flow', price:799, tag:'Hombre', cat:'Almacenamiento', emoji:'👖'},
-      {id:4, name:'Top Deportivo Wave', price:649, tag:'Mujer', cat:'Conduccion', emoji:'👚'},
+      {id:1, name:'Playera Essential AKKUA', price:349, tag:'Unisex', cat:'Ropa', emoji:'👕'},
+      {id:2, name:'Sudadera Cian Gradient', price:899, tag:'Unisex', cat:'Ropa', emoji:'🧥'},
+      {id:3, name:'Pants Black Flow', price:799, tag:'Hombre', cat:'Ropa', emoji:'👖'},
+      {id:4, name:'Top Deportivo Wave', price:649, tag:'Mujer', cat:'Ropa', emoji:'👚'},
       {id:5, name:'Gorra Logo Minimal', price:299, tag:'Unisex', cat:'Accesorios', emoji:'🧢'},
       {id:6, name:'Mochila NeoSplash', price:1099, tag:'Unisex', cat:'Accesorios', emoji:'🎒'},
       {id:7, name:'Botella Térmica 750ml', price:459, tag:'Gear', cat:'Accesorios', emoji:'🍼'},
-      {id:8, name:'Tenis Urban Aqua', price:1599, tag:'Unisex', cat:'Alamcenamiento', emoji:'👟'},
-      {id:9, name:'Sandalias Drift', price:499, tag:'Unisex', cat:'Akkua point', emoji:'🩴'},
-      {id:10, name:'Rompevientos Boreal', price:1299, tag:'Unisex', cat:'Almacenamiento', emoji:'🧥'},
+      {id:8, name:'Tenis Urban Aqua', price:1599, tag:'Unisex', cat:'Calzado', emoji:'👟'},
+      {id:9, name:'Sandalias Drift', price:499, tag:'Unisex', cat:'Calzado', emoji:'🩴'},
+      {id:10, name:'Rompevientos Boreal', price:1299, tag:'Unisex', cat:'Ropa', emoji:'🧥'},
       {id:11, name:'Lentes IceShield', price:799, tag:'Gear', cat:'Accesorios', emoji:'🕶️'},
       {id:12, name:'Calcetas Wave Pack (3)', price:249, tag:'Unisex', cat:'Accesorios', emoji:'🧦'}
     ];
 
-    const categories = ['Almacenamiento','Conduccion','Accesorios','AKKUA Point'];
+    const categories = ['Todos','Ropa','Accesorios','Calzado'];
 
     // chips filtros
     categories.forEach(c=>{
@@ -512,7 +516,7 @@
   (function(){
     const form = document.getElementById('contactForm');
     const status = document.getElementById('formStatus');
-    const to = 'antoine100120@gmail.com'; // ⇦ cambia este correo por el oficial
+    const to = 'contacto@akkua.mx'; // ⇦ cambia este correo por el oficial
     form.addEventListener('submit', e => {
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
@@ -531,4 +535,3 @@
   </script>
 </body>
 </html>
-
