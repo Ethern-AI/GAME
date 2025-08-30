@@ -14,8 +14,8 @@
       --bg-soft:#12141a;       /* negro suave */
       --fg:#ffffff;            /* blanco */
       --muted:#b8c0cc;         /* gris claro */
-      --cyan:#0F9ED5;          /* azul cian de marca */
-      --cyan-2:#27c3ff;
+      --cyan:#00D4FF;          /* azul cian más intenso */
+      --cyan-2:#00B8E5;        /* cian más oscuro para contraste */
       --card:#0f1218;
       --ok:#29cc74;
       --danger:#ff5a79;
@@ -27,8 +27,8 @@
     body{
       margin:0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 80% -10%, rgba(15,158,213,.15), transparent 55%),
-                  radial-gradient(800px 600px at -10% 20%, rgba(39,195,255,.12), transparent 55%),
+      background: radial-gradient(1200px 800px at 80% -10%, rgba(0,212,255,.15), transparent 55%),
+                  radial-gradient(800px 600px at -10% 20%, rgba(0,184,229,.12), transparent 55%),
                   var(--bg);
       color:var(--fg);
       line-height:1.5;
@@ -42,7 +42,7 @@
     #loader.hidden{opacity:0; visibility:hidden}
     .spinner{
       width:72px; height:72px; border-radius:50%; border:4px solid rgba(255,255,255,.12); border-top-color:var(--cyan);
-      animation:spin 1s linear infinite; position:relative; box-shadow:0 0 0 6px rgba(15,158,213,.08) inset;
+      animation:spin 1s linear infinite; position:relative; box-shadow:0 0 0 6px rgba(0,212,255,.08) inset;
     }
     .spinner::after{
       content:"AKKUA"; position:absolute; inset:auto 0 -28px 0; text-align:center; font-weight:700; font-size:.8rem; color:var(--muted);
@@ -58,18 +58,26 @@
     }
     .nav{
       max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 20px;
+      flex-wrap: wrap;
     }
     .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg)}
     .logo{
-      width:40px; height:40px; border-radius:12px; background: radial-gradient(120% 120% at 30% 20%, var(--cyan-2), var(--cyan));
+      width:40px; height:40px; border-radius:12px; background: radial-gradient(120% 120% at 30% 20%, var(--cyan), var(--cyan-2));
       display:grid; place-items:center; box-shadow:var(--shadow);
     }
-    .logo svg{filter:drop-shadow(0 6px 16px rgba(39,195,255,.35))}
+    .logo svg{filter:drop-shadow(0 6px 16px rgba(0,212,255,.35))}
     .brand span{font-weight:800; letter-spacing:.06em}
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
     nav a{
       color:var(--muted); text-decoration:none; font-weight:600; padding:10px 14px; border-radius:12px; transition:all .2s ease;
+      white-space: nowrap;
     }
-    nav a:hover, nav a.active{color:var(--fg); background:rgba(15,158,213,.12)}
+    nav a:hover, nav a.active{color:var(--fg); background:rgba(0,212,255,.12)}
     .cta{background:linear-gradient(135deg, var(--cyan), var(--cyan-2)); color:#02121a !important;}
 
     /* ---------- Hero ---------- */
@@ -96,25 +104,27 @@
     .key{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-weight:700; font-size:.9rem; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.04)}
 
     .game-area{display:grid; grid-template-columns:1fr; gap:14px}
-    canvas#board{width:100%; max-width:520px; aspect-ratio:1/1; border-radius:18px; background:radial-gradient(600px 400px at 10% 0%, rgba(15,158,213,.10), transparent 60%), #0a0d12; border:1px solid rgba(255,255,255,.08); box-shadow:var(--shadow)}
+    canvas#board{width:100%; max-width:520px; aspect-ratio:1/1; border-radius:18px; background:radial-gradient(600px 400px at 10% 0%, rgba(0,212,255,.10), transparent 60%), #0a0d12; border:1px solid rgba(255,255,255,.08); box-shadow:var(--shadow)}
 
     /* Joystick */
     .joystick{display:none; gap:10px; user-select:none}
     .joy-row{display:flex; justify-content:center; gap:10px}
     .joy-btn{width:64px; height:64px; border-radius:16px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); box-shadow:var(--shadow); touch-action:manipulation; -webkit-tap-highlight-color: transparent}
-    .joy-btn:active{transform:scale(.98); background:rgba(15,158,213,.12); border-color:rgba(39,195,255,.6)}
+    .joy-btn:active{transform:scale(.98); background:rgba(0,212,255,.12); border-color:rgba(0,212,255,.6)}
     .joy-btn svg{opacity:.9}
     @media (max-width: 860px){
       .hero{grid-template-columns:1fr;}
       .joystick{display:grid; padding-top:8px}
       .hero .panel{order:-1}
+      .nav { justify-content: center; }
+      nav { margin-top: 10px; }
     }
 
     /* ---------- CATÁLOGO ---------- */
     .catalog-top{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
     .filters{display:flex; gap:8px; flex-wrap:wrap}
     .chip{padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); cursor:pointer; transition:.2s}
-    .chip.active, .chip:hover{background:rgba(15,158,213,.12); border-color:rgba(39,195,255,.5)}
+    .chip.active, .chip:hover{background:rgba(0,212,255,.12); border-color:rgba(0,212,255,.5)}
     .search{display:flex; gap:8px; align-items:center; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:8px 12px; border-radius:12px}
     .search input, .select{all:unset; color:var(--fg)}
     .select{padding:8px 12px; border:1px solid rgba(255,255,255,.12); border-radius:12px; background:rgba(255,255,255,.04)}
@@ -123,7 +133,7 @@
     .card{grid-column: span 3; background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; overflow:hidden; position:relative; transition:transform .2s ease, box-shadow .2s ease}
     .card:hover{transform:translateY(-4px); box-shadow:0 20px 40px rgba(0,0,0,.35)}
     .thumb{aspect-ratio:4/5; background:
-      radial-gradient(150% 120% at 80% 10%, rgba(39,195,255,.25), transparent 40%),
+      radial-gradient(150% 120% at 80% 10%, rgba(0,212,255,.25), transparent 40%),
       linear-gradient(135deg, #0a0e14, #0f141b);
       display:grid; place-items:center}
     .thumb span{font-size:2.4rem; opacity:.25}
@@ -148,6 +158,42 @@
     .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.18); background:linear-gradient(135deg, var(--cyan), var(--cyan-2)); color:#07131a; font-weight:800; cursor:pointer}
 
     footer{padding:50px 20px; text-align:center; color:var(--muted)}
+
+    /* Media queries para diseño responsive */
+    @media (max-width: 768px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        flex-direction: column;
+        padding: 10px 20px;
+      }
+      
+      nav {
+        width: 100%;
+        justify-content: space-around;
+        margin-top: 10px;
+      }
+      
+      nav a {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      nav {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      nav a {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -207,7 +253,7 @@
         </div>
         <div class="game-ui">
           <span class="pill">Puntaje: <strong id="score">0</strong></span>
-          <button id="restart" class="btn" type="button">COMENZAR</button>
+          <button id="restart" class="btn" type="button">Reiniciar</button>
           <span class="pill" id="status">Listo 🎮</span>
         </div>
       </div>
@@ -217,7 +263,7 @@
   <!-- JUGAR -->
   <section id="jugar" aria-labelledby="jugar-title">
     <h2 id="jugar-title">AKKUA</h2>
-    <p class="section-sub">Comprometidos a optimizar tus recursos.</p>
+    <p class="section-sub">Puntaje máximo: <strong id="high-score">0</strong></p>
   </section>
 
   <!-- CATÁLOGO -->
@@ -308,6 +354,7 @@
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
     const scoreEl = document.getElementById('score');
+    const highScoreEl = document.getElementById('high-score');
     const statusEl = document.getElementById('status');
     const restartBtn = document.getElementById('restart');
     const joystick = document.getElementById('joystick');
@@ -316,6 +363,8 @@
     const cells = canvas.width / grid; // asume cuadrado
 
     let snake, dir, food, speed, running, tick, last;
+    let highScore = localStorage.getItem('snakeHighScore') || 0;
+    highScoreEl.textContent = highScore;
 
     function init(){
       snake = [{x:10, y:10}];
@@ -358,7 +407,16 @@
       snake.unshift(head);
       // comer
       if(head.x === food.x && head.y === food.y){
-        const n = parseInt(scoreEl.textContent,10) + 1; scoreEl.textContent = String(n);
+        const n = parseInt(scoreEl.textContent,10) + 1; 
+        scoreEl.textContent = String(n);
+        
+        // Actualizar puntaje máximo si es necesario
+        if (n > highScore) {
+          highScore = n;
+          highScoreEl.textContent = highScore;
+          localStorage.setItem('snakeHighScore', highScore);
+        }
+        
         speed = Math.max(50, speed - 3);
         placeFood();
       } else {
@@ -380,14 +438,14 @@
 
       // comida
       const g = ctx.createRadialGradient(food.x*grid+10, food.y*grid+10, 2, food.x*grid+10, food.y*grid+10, 10);
-      g.addColorStop(0, 'rgba(39,195,255,1)');
-      g.addColorStop(1, 'rgba(39,195,255,.15)');
+      g.addColorStop(0, 'rgba(0,212,255,1)');
+      g.addColorStop(1, 'rgba(0,212,255,.15)');
       ctx.fillStyle = g; ctx.fillRect(food.x*grid, food.y*grid, grid, grid);
 
       // serpiente
       for(let i=0;i<snake.length;i++){
         const s = snake[i];
-        ctx.fillStyle = i===0? '#0F9ED5' : 'rgba(39,195,255,.75)';
+        ctx.fillStyle = i===0? '#00D4FF' : 'rgba(0,212,255,.75)';
         ctx.fillRect(s.x*grid, s.y*grid, grid-1, grid-1);
       }
     }
@@ -535,6 +593,3 @@
   </script>
 </body>
 </html>
-
-
-
