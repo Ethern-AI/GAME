@@ -58,7 +58,6 @@
     }
     .nav{
       max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 20px;
-      flex-wrap: wrap;
     }
     .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg)}
     .logo{
@@ -69,13 +68,10 @@
     .brand span{font-weight:800; letter-spacing:.06em}
     nav {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
       gap: 8px;
     }
     nav a{
       color:var(--muted); text-decoration:none; font-weight:600; padding:10px 14px; border-radius:12px; transition:all .2s ease;
-      white-space: nowrap;
     }
     nav a:hover, nav a.active{color:var(--fg); background:rgba(0,212,255,.12)}
     .cta{background:linear-gradient(135deg, var(--cyan), var(--cyan-2)); color:#02121a !important;}
@@ -112,13 +108,6 @@
     .joy-btn{width:64px; height:64px; border-radius:16px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); box-shadow:var(--shadow); touch-action:manipulation; -webkit-tap-highlight-color: transparent}
     .joy-btn:active{transform:scale(.98); background:rgba(0,212,255,.12); border-color:rgba(0,212,255,.6)}
     .joy-btn svg{opacity:.9}
-    @media (max-width: 860px){
-      .hero{grid-template-columns:1fr;}
-      .joystick{display:grid; padding-top:8px}
-      .hero .panel{order:-1}
-      .nav { justify-content: center; }
-      nav { margin-top: 10px; }
-    }
 
     /* ---------- CATÁLOGO ---------- */
     .catalog-top{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
@@ -160,38 +149,46 @@
     footer{padding:50px 20px; text-align:center; color:var(--muted)}
 
     /* Media queries para diseño responsive */
-    @media (max-width: 768px) {
-      .contact-grid {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 860px){
+      .hero{grid-template-columns:1fr;}
+      .joystick{display:grid; padding-top:8px}
+      .hero .panel{order:-1}
       
+      /* Menú responsivo */
       .nav {
         flex-direction: column;
-        padding: 10px 20px;
+        align-items: stretch;
+        text-align: center;
       }
       
       nav {
-        width: 100%;
-        justify-content: space-around;
-        margin-top: 10px;
+        margin-top: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
       }
       
       nav a {
-        padding: 8px 12px;
+        margin: 5px;
         font-size: 0.9rem;
+        padding: 8px 12px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
       }
     }
 
     @media (max-width: 480px) {
       nav {
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
       }
       
       nav a {
-        width: 100%;
         text-align: center;
-        margin-bottom: 5px;
+        margin: 3px 0;
       }
     }
   </style>
