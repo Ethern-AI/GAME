@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AKKUA — Tecnología y Juego</title>
+  <meta name="description" content="AKKUA — Juega, juega y conoce. Repartiendo soluciones." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0c0f;            /* negro profundo */
+      --bg-soft:#12141a;       /* negro suave */
+      --fg:#ffffff;            /* blanco */
+      --muted:#b8c0cc;         /* gris claro */
+      --cyan:#0F9ED5;          /* azul cian de marca */
+      --cyan-2:#27c3ff;
+      --card:#0f1218;
+      --ok:#29cc74;
+      --danger:#ff5a79;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 20px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 80% -10%, rgba(15,158,213,.15), transparent 55%),
+                  radial-gradient(800px 600px at -10% 20%, rgba(39,195,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--fg);
+      line-height:1.5;
+      scroll-behavior:smooth;
+    }
+    /* ---------- Loader ---------- */
+    #loader{
+      position:fixed; inset:0; background:#050608; display:grid; place-items:center; z-index:9999;
+      transition:opacity 5s ease, visibility 5s ease;
+    }
+    #loader.hidden{opacity:0; visibility:hidden}
+    .spinner{
+      width:72px; height:72px; border-radius:50%; border:4px solid rgba(255,255,255,.12); border-top-color:var(--cyan);
+      animation:spin 1s linear infinite; position:relative; box-shadow:0 0 0 6px rgba(15,158,213,.08) inset;
+    }
+    .spinner::after{
+      content:"AKKUA"; position:absolute; inset:auto 0 -28px 0; text-align:center; font-weight:700; font-size:.8rem; color:var(--muted);
+      letter-spacing:.2em;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ---------- Header / Nav ---------- */
+    header{
+      position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.1) blur(10px);
+      background:linear-gradient(180deg, rgba(10,11,14,.9), rgba(10,11,14,.6));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav{
+      max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 20px;
+    }
+    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg)}
+    .logo{
+      width:40px; height:40px; border-radius:12px; background: radial-gradient(120% 120% at 30% 20%, var(--cyan-2), var(--cyan));
+      display:grid; place-items:center; box-shadow:var(--shadow);
+    }
+    .logo svg{filter:drop-shadow(0 6px 16px rgba(39,195,255,.35))}
+    .brand span{font-weight:800; letter-spacing:.06em}
+    nav a{
+      color:var(--muted); text-decoration:none; font-weight:600; padding:10px 14px; border-radius:12px; transition:all .2s ease;
+    }
+    nav a:hover, nav a.active{color:var(--fg); background:rgba(15,158,213,.12)}
+    .cta{background:linear-gradient(135deg, var(--cyan), var(--cyan-2)); color:#02121a !important;}
+
+    /* ---------- Hero ---------- */
+    .hero{max-width:1200px; margin:24px auto 0; padding:40px 20px 20px; display:grid; grid-template-columns:1.2fr .8fr; gap:26px; align-items:center}
+    .hero h1{font-size:clamp(28px, 3.2vw, 44px); line-height:1.1; margin:0 0 12px; font-weight:800}
+    .hero p{color:var(--muted); margin:0 0 22px}
+    .badges{display:flex; gap:10px; flex-wrap:wrap; margin:-6px 0 20px}
+    .badge{font-size:.8rem; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08)}
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px;
+    }
+
+    /* ---------- Sections container ---------- */
+    section{max-width:1200px; margin:0 auto; padding:60px 20px}
+    section h2{font-size:clamp(22px, 2.4vw, 32px); margin:0 0 14px; font-weight:800}
+    .section-sub{color:var(--muted); margin:0 0 24px}
+
+    /* ---------- JUGAR (Snake) ---------- */
+    .game-wrap{display:grid; grid-template-columns:1fr; gap:16px}
+    .game-ui{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+    .pill{padding:8px 12px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); border-radius:12px}
+    .controls{display:flex; gap:8px; align-items:center}
+    .key{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-weight:700; font-size:.9rem; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.04)}
+
+    .game-area{display:grid; grid-template-columns:1fr; gap:14px}
+    canvas#board{width:100%; max-width:520px; aspect-ratio:1/1; border-radius:18px; background:radial-gradient(600px 400px at 10% 0%, rgba(15,158,213,.10), transparent 60%), #0a0d12; border:1px solid rgba(255,255,255,.08); box-shadow:var(--shadow)}
+
+    /* Joystick */
+    .joystick{display:none; gap:10px; user-select:none}
+    .joy-row{display:flex; justify-content:center; gap:10px}
+    .joy-btn{width:64px; height:64px; border-radius:16px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); box-shadow:var(--shadow); touch-action:manipulation; -webkit-tap-highlight-color: transparent}
+    .joy-btn:active{transform:scale(.98); background:rgba(15,158,213,.12); border-color:rgba(39,195,255,.6)}
+    .joy-btn svg{opacity:.9}
+    @media (max-width: 860px){
+      .hero{grid-template-columns:1fr;}
+      .joystick{display:grid; padding-top:8px}
+      .hero .panel{order:-1}
+    }
+
+    /* ---------- CATÁLOGO ---------- */
+    .catalog-top{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .filters{display:flex; gap:8px; flex-wrap:wrap}
+    .chip{padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); cursor:pointer; transition:.2s}
+    .chip.active, .chip:hover{background:rgba(15,158,213,.12); border-color:rgba(39,195,255,.5)}
+    .search{display:flex; gap:8px; align-items:center; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:8px 12px; border-radius:12px}
+    .search input, .select{all:unset; color:var(--fg)}
+    .select{padding:8px 12px; border:1px solid rgba(255,255,255,.12); border-radius:12px; background:rgba(255,255,255,.04)}
+
+    .grid{display:grid; grid-template-columns:repeat(12, 1fr); gap:14px; margin-top:16px}
+    .card{grid-column: span 3; background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; overflow:hidden; position:relative; transition:transform .2s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-4px); box-shadow:0 20px 40px rgba(0,0,0,.35)}
+    .thumb{aspect-ratio:4/5; background:
+      radial-gradient(150% 120% at 80% 10%, rgba(39,195,255,.25), transparent 40%),
+      linear-gradient(135deg, #0a0e14, #0f141b);
+      display:grid; place-items:center}
+    .thumb span{font-size:2.4rem; opacity:.25}
+    .info{padding:12px 14px 14px}
+    .title{font-weight:700}
+    .meta{display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--muted); font-size:.95rem}
+    .price{font-weight:800; color:var(--fg)}
+    .tag{font-size:.75rem; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04)}
+    .quick{position:absolute; left:12px; top:12px; display:flex; gap:8px}
+    .quick button{padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); color:var(--fg); cursor:pointer}
+
+    @media (max-width:1000px){ .card{grid-column: span 4} }
+    @media (max-width:700px){ .card{grid-column: span 6} }
+
+    /* ---------- CONTACTO ---------- */
+    .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+    .contact-card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:16px}
+    .field{display:grid; gap:6px; margin-bottom:12px}
+    .field input, .field textarea{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:var(--fg)
+    }
+    .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.18); background:linear-gradient(135deg, var(--cyan), var(--cyan-2)); color:#07131a; font-weight:800; cursor:pointer}
+
+    footer{padding:50px 20px; text-align:center; color:var(--muted)}
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader" role="progressbar" aria-label="Cargando">
+    <div class="spinner" aria-hidden="true"></div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="nav">
+      <a class="brand" href="#top" aria-label="AKKUA Inicio">
+        <div class="logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2l3.5 6H8.5L12 2Z" fill="#00131a"/>
+            <path d="M3 20l5.5-10h7L21 20H3Z" fill="#00131a"/>
+          </svg>
+        </div>
+        <span>AKKUA</span>
+      </a>
+      <nav>
+        <a href="#jugar">Jugar</a>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#contacto" class="cta">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero / Intro -->
+  <div id="top" class="hero">
+    <div>
+      <h1>Innovación limpia, diseño impecable y diversión directa.</h1>
+      <p class="section-sub">Bienvenido a <strong>AKKUA</strong>. Explora un minijuego clásico de serpiente, navega un catálogo con estilo tipo retail y escríbenos desde el mismo sitio.</p>
+      <div class="badges">
+        <span class="badge">⚡ Rápido</span>
+        <span class="badge">🧊 Minimal</span>
+        <span class="badge">🌊 Cian AKKUA</span>
+      </div>
+      <div class="controls">
+        <span class="pill">Teclado: <span class="key">⬅</span> <span class="key">⬆</span> <span class="key">⬇</span> <span class="key">➡</span></span>
+        <span class="pill">Móvil: Joystick táctil</span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="game-area">
+        <canvas id="board" width="520" height="520" aria-label="Tablero del juego"></canvas>
+        <!-- Joystick (visible en móvil) -->
+        <div class="joystick" id="joystick" aria-label="Joystick">
+          <div class="joy-row">
+            <button class="joy-btn" data-dir="up" aria-label="Arriba">⬆</button>
+          </div>
+          <div class="joy-row">
+            <button class="joy-btn" data-dir="left" aria-label="Izquierda">⬅</button>
+            <button class="joy-btn" data-dir="down" aria-label="Abajo">⬇</button>
+            <button class="joy-btn" data-dir="right" aria-label="Derecha">➡</button>
+          </div>
+        </div>
+        <div class="game-ui">
+          <span class="pill">Puntaje: <strong id="score">0</strong></span>
+          <button id="restart" class="btn" type="button">Reiniciar</button>
+          <span class="pill" id="status">Listo 🎮</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JUGAR -->
+  <section id="jugar" aria-labelledby="jugar-title">
+    <h2 id="jugar-title">Jugar</h2>
+    <p class="section-sub">Come los orbes cian, evita chocar contigo y con las paredes. Aumenta la velocidad al crecer.</p>
+  </section>
+
+  <!-- CATÁLOGO -->
+  <section id="catalogo" aria-labelledby="catalogo-title">
+    <h2 id="catalogo-title">Catálogo</h2>
+    <p class="section-sub">Interfaz innovadora: filtros, búsqueda, ordenamiento y tarjetas con animación.</p>
+
+    <div class="catalog-top">
+      <div class="filters" id="filters"></div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <div class="search">
+          🔎 <input id="q" placeholder="Buscar producto..." aria-label="Buscar" />
+        </div>
+        <select id="sort" class="select" aria-label="Ordenar">
+          <option value="featured">Destacados</option>
+          <option value="price-asc">Precio: menor a mayor</option>
+          <option value="price-desc">Precio: mayor a menor</option>
+          <option value="name-asc">Nombre A–Z</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid" id="grid" aria-live="polite"></div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" aria-labelledby="contacto-title">
+    <h2 id="contacto-title">Contacto</h2>
+    <p class="section-sub">¿Tienes una idea, cotización o colaboración? Escríbenos.</p>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <h3 style="margin-top:0">Información</h3>
+        <p>
+          <strong>AKKUA</strong><br/>
+          Monterrey, NL, México<br/>
+          Tel: <a href="tel:+528120000000">+52 81 2000 0000</a><br/>
+          Correo: <a href="mailto:contacto@akkua.mx">contacto@akkua.mx</a>
+        </p>
+        <p style="color:var(--muted)">Síguenos</p>
+        <div style="display:flex; gap:10px">
+          <a class="chip" href="#" aria-label="Instagram">Instagram</a>
+          <a class="chip" href="#" aria-label="Facebook">Facebook</a>
+          <a class="chip" href="#" aria-label="X">X</a>
+        </div>
+      </div>
+      <form id="contactForm" class="contact-card" autocomplete="on">
+        <h3 style="margin-top:0">Escríbenos</h3>
+        <div class="field">
+          <label for="name">Nombre</label>
+          <input id="name" name="name" placeholder="Tu nombre" required />
+        </div>
+        <div class="field">
+          <label for="email">Correo</label>
+          <input id="email" name="email" type="email" placeholder="tucorreo@dominio.com" required />
+        </div>
+        <div class="field">
+          <label for="msg">Mensaje</label>
+          <textarea id="msg" name="msg" rows="5" placeholder="Cuéntanos en qué podemos ayudarte" required></textarea>
+        </div>
+        <button class="btn" type="submit">Enviar email</button>
+        <p id="formStatus" class="section-sub" style="margin:10px 0 0"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer>© <span id="year"></span> AKKUA. Todos los derechos reservados.</footer>
+
+  <script>
+  // ------- Loader -------
+  window.addEventListener('load', () => {
+    setTimeout(()=>document.getElementById('loader').classList.add('hidden'), 350);
+  });
+
+  // ------- Nav Active -------
+  const links = document.querySelectorAll('header nav a');
+  const sections = ['jugar','catalogo','contacto'].map(id=>document.getElementById(id));
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e=>{
+      const id = e.target.id;
+      const link = Array.from(links).find(a=>a.getAttribute('href') === '#' + id);
+      if(e.isIntersecting){ links.forEach(a=>a.classList.remove('active')); if(link) link.classList.add('active'); }
+    });
+  }, {rootMargin:'-55% 0px -40% 0px', threshold:.01});
+  sections.forEach(s=>io.observe(s));
+
+  // ------- SNAKE GAME -------
+  (function(){
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const statusEl = document.getElementById('status');
+    const restartBtn = document.getElementById('restart');
+    const joystick = document.getElementById('joystick');
+
+    const grid = 20; // tamaño de celda
+    const cells = canvas.width / grid; // asume cuadrado
+
+    let snake, dir, food, speed, running, tick, last;
+
+    function init(){
+      snake = [{x:10, y:10}];
+      dir = {x:1, y:0};
+      speed = 110; // ms
+      running = true;
+      scoreEl.textContent = '0';
+      statusEl.textContent = 'Jugando';
+      placeFood();
+      last = 0; requestAnimationFrame(loop);
+    }
+
+    function placeFood(){
+      food = {x: Math.floor(Math.random()*cells), y: Math.floor(Math.random()*cells)};
+      // evita aparecer dentro de la serpiente
+      while(snake.some(s => s.x===food.x && s.y===food.y)){
+        food = {x: Math.floor(Math.random()*cells), y: Math.floor(Math.random()*cells)};
+      }
+    }
+
+    function loop(ts){
+      if(!running) return;
+      if(!last) last = ts;
+      if(ts - last > speed){
+        last = ts; step(); draw();
+      }
+      requestAnimationFrame(loop);
+    }
+
+    function step(){
+      const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+      // colisión con paredes
+      if(head.x < 0 || head.y < 0 || head.x >= cells || head.y >= cells){
+        return gameOver('Golpeaste la pared');
+      }
+      // colisión con cuerpo
+      if(snake.some(s => s.x===head.x && s.y===head.y)){
+        return gameOver('Te mordiste la cola');
+      }
+      snake.unshift(head);
+      // comer
+      if(head.x === food.x && head.y === food.y){
+        const n = parseInt(scoreEl.textContent,10) + 1; scoreEl.textContent = String(n);
+        speed = Math.max(50, speed - 3);
+        placeFood();
+      } else {
+        snake.pop();
+      }
+    }
+
+    function draw(){
+      // fondo cuadriculado sutil
+      ctx.fillStyle = '#0a0d12';
+      ctx.fillRect(0,0,canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(255,255,255,.04)';
+      for(let i=0;i<cells;i++){
+        ctx.moveTo(i*grid,0); ctx.lineTo(i*grid, canvas.height);
+        ctx.moveTo(0,i*grid); ctx.lineTo(canvas.width, i*grid);
+      }
+      ctx.stroke();
+
+      // comida
+      const g = ctx.createRadialGradient(food.x*grid+10, food.y*grid+10, 2, food.x*grid+10, food.y*grid+10, 10);
+      g.addColorStop(0, 'rgba(39,195,255,1)');
+      g.addColorStop(1, 'rgba(39,195,255,.15)');
+      ctx.fillStyle = g; ctx.fillRect(food.x*grid, food.y*grid, grid, grid);
+
+      // serpiente
+      for(let i=0;i<snake.length;i++){
+        const s = snake[i];
+        ctx.fillStyle = i===0? '#0F9ED5' : 'rgba(39,195,255,.75)';
+        ctx.fillRect(s.x*grid, s.y*grid, grid-1, grid-1);
+      }
+    }
+
+    function gameOver(reason){
+      running = false; statusEl.textContent = 'Game Over — ' + reason;
+    }
+
+    // teclado
+    window.addEventListener('keydown', e => {
+      const k = e.key;
+      if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(k)){
+        e.preventDefault();
+      }
+      if((k==='ArrowUp' || k==='w') && dir.y!==1) dir={x:0,y:-1};
+      else if((k==='ArrowDown' || k==='s') && dir.y!==-1) dir={x:0,y:1};
+      else if((k==='ArrowLeft' || k==='a') && dir.x!==1) dir={x:-1,y:0};
+      else if((k==='ArrowRight' || k==='d') && dir.x!==-1) dir={x:1,y:0};
+    }, {passive:false});
+
+    // joystick móvil
+    function bindJoy(btn){
+      const dirMap = {up:{x:0,y:-1}, down:{x:0,y:1}, left:{x:-1,y:0}, right:{x:1,y:0}};
+      const d = dirMap[btn.dataset.dir];
+      btn.addEventListener('touchstart', (e)=>{ e.preventDefault(); setDir(d); }, {passive:false});
+      btn.addEventListener('click', ()=> setDir(d));
+    }
+    function setDir(d){
+      // impedir giro 180° instantáneo
+      if((d.x === 0 && d.y === -1 && dir.y!==1) ||
+         (d.x === 0 && d.y ===  1 && dir.y!==-1) ||
+         (d.x === -1 && d.y === 0 && dir.x!==1) ||
+         (d.x ===  1 && d.y === 0 && dir.x!==-1)){
+        dir = d;
+      }
+    }
+    Array.from(joystick.querySelectorAll('.joy-btn')).forEach(bindJoy);
+
+    // mostrar joystick en pantallas pequeñas
+    const mq = window.matchMedia('(max-width: 860px)');
+    function onMQ(){ joystick.style.display = mq.matches ? 'grid' : 'none'; }
+    mq.addEventListener('change', onMQ); onMQ();
+
+    restartBtn.addEventListener('click', () => init());
+
+    // iniciar
+    init();
+    draw();
+  })();
+
+  // ------- CATÁLOGO (mock de productos y UI) -------
+  (function(){
+    const grid = document.getElementById('grid');
+    const filtersWrap = document.getElementById('filters');
+    const q = document.getElementById('q');
+    const sort = document.getElementById('sort');
+
+    const products = [
+      {id:1, name:'Playera Essential AKKUA', price:349, tag:'Unisex', cat:'Conduccion', emoji:'👕'},
+      {id:2, name:'Sudadera Cian Gradient', price:899, tag:'Unisex', cat:'Almacenamiento', emoji:'🧥'},
+      {id:3, name:'Pants Black Flow', price:799, tag:'Hombre', cat:'Almacenamiento', emoji:'👖'},
+      {id:4, name:'Top Deportivo Wave', price:649, tag:'Mujer', cat:'Conduccion', emoji:'👚'},
+      {id:5, name:'Gorra Logo Minimal', price:299, tag:'Unisex', cat:'Accesorios', emoji:'🧢'},
+      {id:6, name:'Mochila NeoSplash', price:1099, tag:'Unisex', cat:'Accesorios', emoji:'🎒'},
+      {id:7, name:'Botella Térmica 750ml', price:459, tag:'Gear', cat:'Accesorios', emoji:'🍼'},
+      {id:8, name:'Tenis Urban Aqua', price:1599, tag:'Unisex', cat:'Alamcenamiento', emoji:'👟'},
+      {id:9, name:'Sandalias Drift', price:499, tag:'Unisex', cat:'Akkua point', emoji:'🩴'},
+      {id:10, name:'Rompevientos Boreal', price:1299, tag:'Unisex', cat:'Almacenamiento', emoji:'🧥'},
+      {id:11, name:'Lentes IceShield', price:799, tag:'Gear', cat:'Accesorios', emoji:'🕶️'},
+      {id:12, name:'Calcetas Wave Pack (3)', price:249, tag:'Unisex', cat:'Accesorios', emoji:'🧦'}
+    ];
+
+    const categories = ['Almacenamiento','Conduccion','Accesorios','AKKUA Point'];
+
+    // chips filtros
+    categories.forEach(c=>{
+      const b = document.createElement('button');
+      b.className = 'chip'; b.textContent = c; b.dataset.cat = c;
+      if(c==='Todos') b.classList.add('active');
+      b.addEventListener('click', ()=>{
+        document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active'); render();
+      });
+      filtersWrap.appendChild(b);
+    });
+
+    q.addEventListener('input', render);
+    sort.addEventListener('change', render);
+
+    function render(){
+      const active = document.querySelector('.chip.active')?.dataset.cat || 'Todos';
+      const term = q.value.trim().toLowerCase();
+      let list = products.filter(p => (active==='Todos' || p.cat===active) && (!term || p.name.toLowerCase().includes(term)));
+      switch(sort.value){
+        case 'price-asc': list.sort((a,b)=>a.price-b.price); break;
+        case 'price-desc': list.sort((a,b)=>b.price-a.price); break;
+        case 'name-asc': list.sort((a,b)=>a.name.localeCompare(b.name)); break;
+        default: break; // featured
+      }
+      grid.innerHTML = '';
+      list.forEach(p=> grid.appendChild(card(p)));
+    }
+
+    function card(p){
+      const el = document.createElement('article'); el.className = 'card'; el.setAttribute('tabindex','0');
+      el.innerHTML = `
+        <div class="quick">
+          <button title="Favorito">♡</button>
+          <button title="Vista rápida">👁</button>
+        </div>
+        <div class="thumb"><span>${p.emoji}</span></div>
+        <div class="info">
+          <div class="title">${p.name}</div>
+          <div class="meta">
+            <span class="tag">${p.cat}</span>
+            <span class="price">$${p.price}</span>
+          </div>
+        </div>`;
+      return el;
+    }
+
+    render();
+  })();
+
+  // ------- CONTACTO (mailto handler) -------
+  (function(){
+    const form = document.getElementById('contactForm');
+    const status = document.getElementById('formStatus');
+    const to = 'antoine100120@gmail.com'; // ⇦ cambia este correo por el oficial
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const msg = document.getElementById('msg').value.trim();
+      const subject = encodeURIComponent('Contacto desde sitio AKKUA — ' + name);
+      const body = encodeURIComponent(`Nombre: ${name}\nCorreo: ${email}\n\nMensaje:\n${msg}`);
+      const mailto = `mailto:${to}?subject=${subject}&body=${body}`;
+      window.location.href = mailto;
+      status.textContent = 'Abriendo tu gestor de correo…';
+    });
+  })();
+
+  // ------- Misc -------
+  document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
