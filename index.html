@@ -58,17 +58,44 @@
     }
     .nav{
       max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 20px;
+      position: relative;
     }
-    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg)}
+    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg); z-index: 10;}
     .logo{
       width:40px; height:40px; border-radius:12px; background: radial-gradient(120% 120% at 30% 20%, var(--cyan), var(--cyan-2));
       display:grid; place-items:center; box-shadow:var(--shadow);
     }
     .logo svg{filter:drop-shadow(0 6px 16px rgba(0,212,255,.35))}
     .brand span{font-weight:800; letter-spacing:.06em}
+    
+    /* Botón hamburguesa */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: space-around;
+      width: 30px;
+      height: 25px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      z-index: 10;
+    }
+    
+    .menu-toggle span {
+      width: 100%;
+      height: 3px;
+      background-color: var(--fg);
+      border-radius: 10px;
+      transition: all 0.3s linear;
+      position: relative;
+      transform-origin: center;
+    }
+    
     nav {
       display: flex;
       gap: 8px;
+      transition: transform 0.3s ease-in-out;
     }
     nav a{
       color:var(--muted); text-decoration:none; font-weight:600; padding:10px 14px; border-radius:12px; transition:all .2s ease;
@@ -155,40 +182,55 @@
       .hero .panel{order:-1}
       
       /* Menú responsivo */
-      .nav {
-        flex-direction: column;
-        align-items: stretch;
-        text-align: center;
+      .menu-toggle {
+        display: flex;
       }
       
       nav {
-        margin-top: 15px;
-        justify-content: center;
-        flex-wrap: wrap;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: linear-gradient(180deg, rgba(10,11,14,.95), rgba(10,11,14,.85));
+        backdrop-filter: saturate(1.1) blur(10px);
+        flex-direction: column;
+        padding: 20px;
+        border-top: 1px solid rgba(255,255,255,.06);
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+      }
+      
+      nav.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
       }
       
       nav a {
-        margin: 5px;
-        font-size: 0.9rem;
-        padding: 8px 12px;
+        width: 100%;
+        text-align: center;
+        margin: 5px 0;
+      }
+      
+      /* Animación del botón hamburguesa */
+      .menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+      
+      .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+      
+      .menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -6px);
       }
     }
 
     @media (max-width: 768px) {
       .contact-grid {
         grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 480px) {
-      nav {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      
-      nav a {
-        text-align: center;
-        margin: 3px 0;
       }
     }
   </style>
@@ -211,6 +253,13 @@
         </div>
         <span>AKKUA</span>
       </a>
+      
+      <button class="menu-toggle" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
       <nav>
         <a href="#jugar">Jugar</a>
         <a href="#catalogo">Catálogo</a>
@@ -332,6 +381,23 @@
   // ------- Loader -------
   window.addEventListener('load', () => {
     setTimeout(()=>document.getElementById('loader').classList.add('hidden'), 350);
+  });
+
+  // ------- Menú móvil -------
+  const menuToggle = document.querySelector('.menu-toggle');
+  const nav = document.querySelector('nav');
+  
+  menuToggle.addEventListener('click', () => {
+    menuToggle.classList.toggle('active');
+    nav.classList.toggle('active');
+  });
+  
+  // Cerrar menú al hacer clic en un enlace
+  document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      menuToggle.classList.remove('active');
+      nav.classList.remove('active');
+    });
   });
 
   // ------- Nav Active -------
